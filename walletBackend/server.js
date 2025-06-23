@@ -14,6 +14,7 @@ const transactions = require('./routes/transactions.js')
 app.use(rateLimiter) 
 app.use(express.json())
 
+
 const dbInit = async() =>{
     try {
         await sql`CREATE TABLE IF NOT EXISTS trans(

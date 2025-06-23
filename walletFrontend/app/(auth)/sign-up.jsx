@@ -1,11 +1,12 @@
 import {useState}  from 'react'
 import React from 'react'
-import { Text, TextInput, TouchableOpacity, View , KeyboardAvoidingView } from 'react-native'
+import { Text, TextInput, TouchableOpacity, View , Image } from 'react-native'
 import { useSignUp } from '@clerk/clerk-expo'
 import { Link, useRouter } from 'expo-router'
 import {styles} from "../../assets/styles/auth.styles.js"
 import { COLORS } from '../../constants/colors.js'
 import Ionicons from "@expo/vector-icons"
+import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view"
 export default function SignUpScreen() {
   const { isLoaded, signUp, setActive } = useSignUp()
   const router = useRouter()
@@ -62,9 +63,11 @@ export default function SignUpScreen() {
         console.error(JSON.stringify(signUpAttempt, null, 2))
       }
     } catch (err) {
-      // See https://clerk.com/docs/custom-flows/error-handling
-      // for more info on error handling
-      console.error(JSON.stringify(err, null, 2))
+        if(err.errors?.[0]?.code === "form_identifier_exists"){
+          setError("the email is already used , try another one ");
+        }else{
+          setError("an error occured  , please try again ")
+        }
     }
   }
 
@@ -100,8 +103,19 @@ export default function SignUpScreen() {
   }
 
   return (
-    <KeyboardAvoidingView style={{flex:1 , alignItems:"center" , justifyContent:"center"}}>
+    <KeyboardAwareScrollView 
+      style = {{ flex:1}} 
+      contentContainerStyle = {{flexGrow:1}}
+      enableOnAndroid = {true}
+      enableAutomaticScroll={true}
+      extraScrollHeight={100}
+    >
       <View style={styles.container}> 
+          <Image 
+            source={require("../../assets/images/fatcat.jpeg")}  
+            style={styles.illustration}  
+          />
+
           <Text style ={styles.verificationTitle}>Sign up</Text>
           
           {error ? (
@@ -142,6 +156,6 @@ export default function SignUpScreen() {
             </TouchableOpacity>
           </View>
       </View>
-    </KeyboardAvoidingView>
+    </KeyboardAwareScrollView>
   )
 }
